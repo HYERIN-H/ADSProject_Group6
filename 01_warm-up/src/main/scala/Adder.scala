@@ -8,6 +8,7 @@ package adder
 
 import chisel3._
 import chisel3.util._
+import utest.*
 
 
 /** 
@@ -21,15 +22,20 @@ import chisel3.util._
 class HalfAdder extends Module{
   
   val io = IO(new Bundle {
-    /* 
+    /*
      * TODO: Define IO ports of a half adder as presented in the lecture
      */
+    val a = Input(UInt(1.W))
+    val b = Input(UInt(1.W))
+    val s = Output(UInt(1.W))
+    val co = Output(UInt(1.W))
     })
 
   /* 
    * TODO: Describe output behaviour based on the input values
    */
-
+    io.s:=io.a^io.b
+    io.co:=io.a&io.b
 }
 
 /** 
@@ -46,21 +52,33 @@ class HalfAdder extends Module{
 class FullAdder extends Module{
 
   val io = IO(new Bundle {
-    /* 
+    /*
      * TODO: Define IO ports of a half adder as presented in the lecture
      */
+    val a = Input(UInt(1.W))
+    val b = Input(UInt(1.W))
+    val ci = Input(UInt(1.W))
+    val s = Output(UInt(1.W))
+    val co = Output(UInt(1.W))
     })
 
 
   /* 
    * TODO: Instanciate the two half adders you want to use based on your HalfAdder class
    */
-
+    val halfa1 = Module(new HalfAdder)
+    val halfa2 = Module(new HalfAdder)
 
   /* 
    * TODO: Describe output behaviour based on the input values and the internal signals
    */
+  halfa1.io.a := io.a
+  halfa1.io.b := io.b
+  halfa2.io.a := halfa1.io.s
+  halfa2.io.b := io.ci
 
+  io.s := halfa2.io.s
+  io.co := halfa1.io.co|halfa2.io.co
 }
 
 /** 
@@ -76,17 +94,52 @@ class FullAdder extends Module{
 class FourBitAdder extends Module{
 
   val io = IO(new Bundle {
-    /* 
+    /*
      * TODO: Define IO ports of a 4-bit ripple-carry-adder as presented in the lecture
      */
+    val a0 = Input(UInt(1.W))
+    val b0 = Input(UInt(1.W))
+    val a1 = Input(UInt(1.W))
+    val b1 = Input(UInt(1.W))
+    val a2 = Input(UInt(1.W))
+    val b2 = Input(UInt(1.W))
+    val a3 = Input(UInt(1.W))
+    val b3 = Input(UInt(1.W))
+    val s0 = Output(UInt(1.W))
+    val s1 = Output(UInt(1.W))
+    val s2 = Output(UInt(1.W))
+    val s3 = Output(UInt(1.W))
+    val co = Output(UInt(1.W))
     })
 
   /* 
    * TODO: Instanciate the full adders and one half adderbased on the previously defined classes
    */
-
+    val halfa = Module(new HalfAdder)
+    val fulla1 = Module(new FullAdder)
+    val fulla2 = Module(new FullAdder)
+    val fulla3 = Module(new FullAdder)
 
   /* 
    * TODO: Describe output behaviour based on the input values and the internal 
    */
+  halfa.io.a := io.a0
+  halfa.io.b := io.b0
+  fulla1.io.a := io.a1
+  fulla1.io.b := io.b1
+  fulla2.io.a := io.a2
+  fulla2.io.b := io.b2
+  fulla3.io.a := io.a3
+  fulla3.io.b := io.b3
+
+  io.s0 := halfa.io.s
+  io.s1 := fulla1.io.s
+  io.s2 := fulla2.io.s
+  io.s3 := fulla3.io.s
+
+  fulla1.io.ci := halfa.io.co
+  fulla2.io.ci := fulla1.io.co
+  fulla3.io.ci := fulla2.io.co
+  io.co := fulla3.io.co
+
 }
