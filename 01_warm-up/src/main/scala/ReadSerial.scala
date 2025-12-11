@@ -42,20 +42,18 @@ class Controller extends Module{
     isBusy := false.B
   } .otherwise {
 
-    // [Logic 1] When not busy (Idle state)
+    // not busy (Idle state)
     when(!isBusy) {
-      // If Start Bit (0) is detected -> Set busy flag to true
       when(io.rxd === 0.U) {
         isBusy := true.B
       }
     }
 
-      // [Logic 2] When busy (Receiving state)
+      // busy (Receiving state)
       .otherwise {
-        // If the counter finishes (cnt_s=1) -> Clear busy flag
         when(io.cnt_s === 1.U) {
           isBusy   := false.B
-          io.valid := 1.U // Assert valid signal to indicate completion
+          io.valid := 1.U
         }
       }
   }
@@ -83,15 +81,8 @@ class Counter extends Module{
   /* 
    * TODO: Describe functionality if the counter as a state machine
    */
-  /*
-  when(io.reset_n === 1.U) // reset signal goes high
-  {
-    icounter := 0.U
-    io.cnt_s := 0.U // not necessary statement
-  }
-*/
 
-  io.cnt_s := 0.U // Initialize
+  io.cnt_s := 0.U // Default Value
 
   when(io.cnt_en === 1.U) // the first bit of receive data comes in
   {
@@ -100,7 +91,7 @@ class Counter extends Module{
 
   when(icounter === 8.U) // internal counter becomes 8
   {
-    icounter := 0.U
+    // icounter := 0.U
     io.cnt_s := 1.U
   } .otherwise(io.cnt_s :=0.U)
 }
@@ -129,7 +120,7 @@ class ShiftRegister extends Module{
   /* 
    * TODO: Describe functionality if the shift register
    */
-  io.data := 0.U //initiate 8bits
+  io.data := 0.U // Default Value
 
   when(io.cnt_en === 1.U)
   {
@@ -161,10 +152,10 @@ class ReadSerial extends Module {
      */
     val reset_n = Input(UInt(1.W))
     val rxd = Input(UInt(1.W))
-    //val cnt_s = Input(UInt(1.W))
-    //val cnt_en = Output(UInt(1.W))
     val valid = Output(UInt(1.W))
     val data = Output(UInt(8.W))
+    //val cnt_s = Input(UInt(1.W))
+    //val cnt_en = Output(UInt(1.W))
   })
 
 
@@ -190,8 +181,6 @@ class ReadSerial extends Module {
   ShiftRegister.io.rxd := io.rxd
   io.valid := Controller.io.valid
   io.data := ShiftRegister.io.data
-
-
 
   val shiftReg = RegInit(0.U(8.W))
 

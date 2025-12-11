@@ -41,13 +41,11 @@ class FourBitAdderTester extends AnyFlatSpec with ChiselScalatestTester {
 
           dut.io.a.poke(a.U)
           dut.io.b.poke(b.U)
-          dut.clock.step()
 
-          dut.io.sum.expect(expectedSum.U)
-          dut.io.cout.expect(expectedCarry.U)
+          dut.io.s.expect(expectedSum.U)
+          dut.io.co.expect(expectedCarry.U)
         }
       }
-
     }
   }
 }
