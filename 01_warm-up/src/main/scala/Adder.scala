@@ -11,16 +11,16 @@ import chisel3.util._
 import utest.*
 
 
-/** 
-  * Half Adder Class 
-  * 
+/**
+  * Half Adder Class
+  *
   * Your task is to implement a basic half adder as presented in the lecture.
   * Each signal should only be one bit wide (inputs and outputs).
   * There should be no delay between input and output signals, we want to have
   * a combinational behaviour of the component.
   */
 class HalfAdder extends Module{
-  
+
   val io = IO(new Bundle {
     /*
      * TODO: Define IO ports of a half adder as presented in the lecture
@@ -31,19 +31,19 @@ class HalfAdder extends Module{
     val co = Output(UInt(1.W))
     })
 
-  /* 
+  /*
    * TODO: Describe output behaviour based on the input values
    */
     io.s:=io.a^io.b
     io.co:=io.a&io.b
 }
 
-/** 
-  * Full Adder Class 
-  * 
-  * Your task is to implement a basic full adder. The component's behaviour should 
-  * match the characteristics presented in the lecture. In addition, you are only allowed 
-  * to use two half adders (use the class that you already implemented) and basic logic 
+/**
+  * Full Adder Class
+  *
+  * Your task is to implement a basic full adder. The component's behaviour should
+  * match the characteristics presented in the lecture. In addition, you are only allowed
+  * to use two half adders (use the class that you already implemented) and basic logic
   * operators (AND, OR, ...).
   * Each signal should only be one bit wide (inputs and outputs).
   * There should be no delay between input and output signals, we want to have
@@ -63,13 +63,13 @@ class FullAdder extends Module{
     })
 
 
-  /* 
+  /*
    * TODO: Instanciate the two half adders you want to use based on your HalfAdder class
    */
     val halfa1 = Module(new HalfAdder)
     val halfa2 = Module(new HalfAdder)
 
-  /* 
+  /*
    * TODO: Describe output behaviour based on the input values and the internal signals
    */
   halfa1.io.a := io.a
@@ -81,11 +81,11 @@ class FullAdder extends Module{
   io.co := halfa1.io.co|halfa2.io.co
 }
 
-/** 
-  * 4-bit Adder class 
-  * 
-  * Your task is to implement a 4-bit ripple-carry-adder. The component's behaviour should 
-  * match the characteristics presented in the lecture.  Remember: An n-bit adder can be 
+/**
+  * 4-bit Adder class
+  *
+  * Your task is to implement a 4-bit ripple-carry-adder. The component's behaviour should
+  * match the characteristics presented in the lecture.  Remember: An n-bit adder can be
   * build using one half adder and n-1 full adders.
   * The inputs and the result should all be 4-bit wide, the carry-out only needs one bit.
   * There should be no delay between input and output signals, we want to have
@@ -97,45 +97,33 @@ class FourBitAdder extends Module{
     /*
      * TODO: Define IO ports of a 4-bit ripple-carry-adder as presented in the lecture
      */
-    val a0 = Input(UInt(1.W))
-    val b0 = Input(UInt(1.W))
-    val a1 = Input(UInt(1.W))
-    val b1 = Input(UInt(1.W))
-    val a2 = Input(UInt(1.W))
-    val b2 = Input(UInt(1.W))
-    val a3 = Input(UInt(1.W))
-    val b3 = Input(UInt(1.W))
-    val s0 = Output(UInt(1.W))
-    val s1 = Output(UInt(1.W))
-    val s2 = Output(UInt(1.W))
-    val s3 = Output(UInt(1.W))
+    val a = Input(UInt(4.W))
+    val b = Input(UInt(4.W))
+    val s = Output(UInt(4.W))
     val co = Output(UInt(1.W))
-    })
+  })
 
-  /* 
+  /*
    * TODO: Instanciate the full adders and one half adderbased on the previously defined classes
    */
-    val halfa = Module(new HalfAdder)
-    val fulla1 = Module(new FullAdder)
-    val fulla2 = Module(new FullAdder)
-    val fulla3 = Module(new FullAdder)
+  val halfa = Module(new HalfAdder)
+  val fulla1 = Module(new FullAdder)
+  val fulla2 = Module(new FullAdder)
+  val fulla3 = Module(new FullAdder)
 
-  /* 
-   * TODO: Describe output behaviour based on the input values and the internal 
+  /*
+   * TODO: Describe output behaviour based on the input values and the internal
    */
-  halfa.io.a := io.a0
-  halfa.io.b := io.b0
-  fulla1.io.a := io.a1
-  fulla1.io.b := io.b1
-  fulla2.io.a := io.a2
-  fulla2.io.b := io.b2
-  fulla3.io.a := io.a3
-  fulla3.io.b := io.b3
+  halfa.io.a := io.a(0)
+  halfa.io.b := io.b(0)
+  fulla1.io.a := io.a(1)
+  fulla1.io.b := io.b(1)
+  fulla2.io.a := io.a(2)
+  fulla2.io.b := io.b(2)
+  fulla3.io.a := io.a(3)
+  fulla3.io.b := io.b(3)
 
-  io.s0 := halfa.io.s
-  io.s1 := fulla1.io.s
-  io.s2 := fulla2.io.s
-  io.s3 := fulla3.io.s
+  io.s := Cat(fulla3.io.s, fulla2.io.s, fulla1.io.s, halfa.io.s)
 
   fulla1.io.ci := halfa.io.co
   fulla2.io.ci := fulla1.io.co
