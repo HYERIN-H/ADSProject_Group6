@@ -289,3 +289,32 @@ class ALUSLTTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+
+class ALUSLTUTest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_SLTU_Tester" should "test SLTU operation" in {
+    test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.clock.setTimeout(0)
+
+      // OperandA(9) < Operand B(10) results in True (1)
+      dut.io.operandA.poke(9.U)
+      dut.io.operandB.poke(10.U) 
+      dut.io.operation.poke(ALUOp.SLTU)
+      dut.io.aluResult.expect(1.U) // True
+      dut.clock.step(1) 
+
+      // OperandA(10) < Operand B(9) results in False (0)
+      dut.io.operandA.poke(10.U)
+      dut.io.operandB.poke(9.U)
+      dut.io.operation.poke(ALUOp.SLTU)
+      dut.io.aluResult.expect(0.U) // False
+      dut.clock.step(1)
+
+      // OperandA(-1) < Operand B(0) results in False (0)
+      dut.io.operandA.poke("hFFFFFFFF".U)
+      dut.io.operandB.poke(0.U)
+      dut.io.operation.poke(ALUOp.SLTU)
+      dut.io.aluResult.expect(0.U) // False
+      dut.clock.step(1)
+    }
+  }
+}
