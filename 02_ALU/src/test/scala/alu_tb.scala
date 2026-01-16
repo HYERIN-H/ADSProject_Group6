@@ -56,3 +56,42 @@ class ALUAddTest extends AnyFlatSpec with ChiselScalatestTester {
 // ToDo: Add test classes for all other ALU operations
 //---------------------------------------------------
 
+class ALUSubTest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_Sub_Tester" should "test SUB operation" in {
+    test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.clock.setTimeout(0)
+
+      //10 - 10 = 0
+      dut.io.operandA.poke(10.U)
+      dut.io.operandB.poke(10.U)
+      dut.io.operation.poke(ALUOp.SUB)
+      dut.io.aluResult.expect(0.U)
+      dut.clock.step(1)
+
+      //0 - 1 = - 1 = hFFFFFFFF
+      dut.io.operandA.poke(0.U)
+      dut.io.operandB.poke(1.U)
+      dut.io.operation.poke(ALUOp.SUB)
+      dut.io.aluResult.expect("hFFFFFFFF".U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke(0.U)
+      dut.io.operandB.poke("hFFFFFFFF".U)
+      dut.io.operation.poke(ALUOp.SUB)
+      dut.io.aluResult.expect(1.U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke(10.U)
+      dut.io.operandB.poke("hFFFFFFFF".U)
+      dut.io.operation.poke(ALUOp.SUB)
+      dut.io.aluResult.expect(11.U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("h80000000".U)
+      dut.io.operandB.poke(1.U)
+      dut.io.operation.poke(ALUOp.SUB)
+      dut.io.aluResult.expect("h7FFFFFFF".U)
+      dut.clock.step(1)
+    }
+  }
+}
