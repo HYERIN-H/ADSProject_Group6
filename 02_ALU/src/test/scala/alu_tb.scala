@@ -225,3 +225,25 @@ class ALUSRLTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+
+class ALUSRATest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_SRA_Tester" should "test SRA operation" in {
+    test(new ALU) { dut =>
+      dut.clock.setTimeout(0)
+
+      // Shift negative number (0x80000000) right by 1 -> should keep sign bit
+      dut.io.operandA.poke("h80000000".U)
+      dut.io.operandB.poke(1.U)
+      dut.io.operation.poke(ALUOp.SRA)
+      dut.io.aluResult.expect("hC0000000".U) 
+      dut.clock.step(1)
+
+      // Shift amount > 31: only low 5 bits used (33 becomes 1)
+      dut.io.operandA.poke("h00000004".U)
+      dut.io.operandB.poke(33.U) // 33 % 32 = 1
+      dut.io.operation.poke(ALUOp.SRA)
+      dut.io.aluResult.expect(2.U)
+      dut.clock.step(1)
+    }
+  }
+}
