@@ -45,5 +45,8 @@ class ALU extends Module {
     is(ALUOp.XOR) {
       io.aluResult := io.operandA ^ io.operandB
     }
+    is(ALUOp.SLL) {
+      io.aluResult := io.operandA << io.operandB(4, 0)
+    }
   }  
 }
