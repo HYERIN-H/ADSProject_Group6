@@ -95,3 +95,35 @@ class ALUSubTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+
+class ALUAndTest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_And_Tester" should "test AND operation" in {
+    test(new ALU) { dut =>
+      dut.clock.setTimeout(0)
+
+      dut.io.operandA.poke("h0000FFFF".U)
+      dut.io.operandB.poke("h00001234".U)
+      dut.io.operation.poke(ALUOp.AND)
+      dut.io.aluResult.expect("h00001234".U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("hABCDEF12".U)
+      dut.io.operandB.poke("hFFFFFFFF".U)
+      dut.io.operation.poke(ALUOp.AND)
+      dut.io.aluResult.expect("hABCDEF12".U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("hFFFFFFFF".U)
+      dut.io.operandB.poke(0.U)
+      dut.io.operation.poke(ALUOp.AND)
+      dut.io.aluResult.expect(0.U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("hAAAAAAAA".U) 
+      dut.io.operandB.poke("h55555555".U) 
+      dut.io.operation.poke(ALUOp.AND)
+      dut.io.aluResult.expect(0.U)
+      dut.clock.step(1)
+    }
+  }
+}
