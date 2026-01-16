@@ -318,3 +318,40 @@ class ALUSLTUTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+
+class ALUPassBTest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_PassB_Tester" should "test PASSB operation" in {
+    test(new ALU) { dut =>
+      dut.clock.setTimeout(0)
+
+      dut.io.operandA.poke("hAAAAAAAA".U) // Noise
+      dut.io.operandB.poke("h12345678".U)
+      dut.io.operation.poke(ALUOp.PASSB)
+      dut.io.aluResult.expect("h12345678".U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("hFFFFFFFF".U) // Max noise
+      dut.io.operandB.poke(0.U)
+      dut.io.operation.poke(ALUOp.PASSB)
+      dut.io.aluResult.expect(0.U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke(0.U)
+      dut.io.operandB.poke("hFFFFFFFF".U)
+      dut.io.operation.poke(ALUOp.PASSB)
+      dut.io.aluResult.expect("hFFFFFFFF".U)
+      dut.clock.step(1)
+
+      dut.io.operandB.poke("h55555555".U)      
+      dut.io.operandA.poke(0.U)
+      dut.io.operation.poke(ALUOp.PASSB)
+      dut.io.aluResult.expect("h55555555".U)
+      dut.clock.step(1)
+      
+      dut.io.operandA.poke("hFFFFFFFF".U)
+      dut.io.operation.poke(ALUOp.PASSB)
+      dut.io.aluResult.expect("h55555555".U)
+      dut.clock.step(1)
+    }
+  }
+}
