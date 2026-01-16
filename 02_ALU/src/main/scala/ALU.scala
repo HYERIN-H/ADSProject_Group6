@@ -51,5 +51,8 @@ class ALU extends Module {
     is(ALUOp.SRL) {
       io.aluResult := io.operandA >> io.operandB(4, 0)
     }
+    is(ALUOp.SRA) {
+      io.aluResult := (io.operandA.asSInt >> io.operandB(4, 0)).asUInt
+    }
   }  
 }
