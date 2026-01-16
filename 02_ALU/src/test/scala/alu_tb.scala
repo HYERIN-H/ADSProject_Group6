@@ -205,3 +205,23 @@ class ALUSLLTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+
+class ALUSRLTest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_SRL_Tester" should "test SRL operation" in {
+    test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.clock.setTimeout(0)
+
+      // Shift negative number (0x80000000) right by the low 5 bits of OperandB -> should not keep sign bit (logic right shift)
+      dut.io.operandA.poke("h80000000".U)
+      dut.io.operandB.poke("h00100001".U)
+      dut.io.operation.poke(ALUOp.SRL)
+      dut.io.aluResult.expect("h40000000".U)
+
+      // Wraparround
+      dut.io.operandA.poke(1.U)
+      dut.io.operandB.poke(2.U)
+      dut.io.operation.poke(ALUOp.SRL)
+      dut.io.aluResult.expect(0.U)
+    }
+  }
+}
