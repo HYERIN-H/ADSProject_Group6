@@ -23,7 +23,31 @@ class ALUAddTest extends AnyFlatSpec with ChiselScalatestTester {
       dut.clock.step(1)
 
       //ToDo: add more test cases for ADD operation
+      // Corner Case: Overflow/Wraparound
+      // 0xFFFFFFFF + 1 should result in 0
+      dut.io.operandA.poke("hFFFFFFFF".U)
+      dut.io.operandB.poke(1.U)
+      dut.io.operation.poke(ALUOp.ADD)
+      dut.io.aluResult.expect(0.U)
+      dut.clock.step(1)
 
+      dut.io.operandA.poke("h80000000".U)
+      dut.io.operandB.poke("h80000000".U)
+      dut.io.operation.poke(ALUOp.ADD)
+      dut.io.aluResult.expect(0.U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("hFFFFFFFB".U)
+      dut.io.operandB.poke(5.U)
+      dut.io.operation.poke(ALUOp.ADD)
+      dut.io.aluResult.expect(0.U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("hFFFFFFFF".U)
+      dut.io.operandB.poke("hFFFFFFFF".U)
+      dut.io.operation.poke(ALUOp.ADD)
+      dut.io.aluResult.expect("hFFFFFFFE".U)
+      dut.clock.step(1)
     }
   }
 }
@@ -31,3 +55,4 @@ class ALUAddTest extends AnyFlatSpec with ChiselScalatestTester {
 // ---------------------------------------------------
 // ToDo: Add test classes for all other ALU operations
 //---------------------------------------------------
+
