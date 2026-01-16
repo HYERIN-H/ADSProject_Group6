@@ -36,5 +36,8 @@ class ALU extends Module {
     is(ALUOp.SUB) {
       io.aluResult := io.operandA - io.operandB
     }
+    is(ALUOp.AND) {
+      io.aluResult := io.operandA & io.operandB
+    }
   }  
 }
