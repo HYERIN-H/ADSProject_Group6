@@ -61,5 +61,8 @@ class ALU extends Module {
     is(ALUOp.SLTU) {
       io.aluResult := Mux(io.operandA < io.operandB, 1.U, 0.U)
     }
+    is(ALUOp.PASSB) {
+      io.aluResult := io.operandB
+    }
   }  
 }
