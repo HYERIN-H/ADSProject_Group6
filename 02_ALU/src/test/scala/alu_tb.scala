@@ -185,3 +185,23 @@ class ALUXorTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+
+class ALUSLLTest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_SLL_Tester" should "test SLL operation" in {
+    test(new ALU).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.clock.setTimeout(0)
+
+      // Shift left by the low 5 bits of OperandB
+      dut.io.operandA.poke("h40000001".U)
+      dut.io.operandB.poke("h00100001".U)
+      dut.io.operation.poke(ALUOp.SLL)
+      dut.io.aluResult.expect("h80000002".U)
+
+      // Wraparround
+      dut.io.operandA.poke("hF0000001".U)
+      dut.io.operandB.poke(1.U)
+      dut.io.operation.poke(ALUOp.SLL)
+      dut.io.aluResult.expect("hE0000002".U)
+    }
+  }
+}
