@@ -153,3 +153,35 @@ class ALUOrTest extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 }
+
+class ALUXorTest extends AnyFlatSpec with ChiselScalatestTester {
+  "ALU_Xor_Tester" should "test XOR operation" in {
+    test(new ALU) { dut =>
+      dut.clock.setTimeout(0)
+
+      dut.io.operandA.poke("hFFFF0000".U)
+      dut.io.operandB.poke("hF0F0F0F0".U)
+      dut.io.operation.poke(ALUOp.XOR)
+      dut.io.aluResult.expect("h0F0FF0F0".U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("hDEADBEEF".U)
+      dut.io.operandB.poke("hDEADBEEF".U)
+      dut.io.operation.poke(ALUOp.XOR)
+      dut.io.aluResult.expect(0.U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("hABCDEF12".U)
+      dut.io.operandB.poke(0.U)
+      dut.io.operation.poke(ALUOp.XOR)
+      dut.io.aluResult.expect("hABCDEF12".U)
+      dut.clock.step(1)
+
+      dut.io.operandA.poke("h00000000".U)
+      dut.io.operandB.poke("hFFFFFFFF".U)
+      dut.io.operation.poke(ALUOp.XOR)
+      dut.io.aluResult.expect("hFFFFFFFF".U)
+      dut.clock.step(1)
+    }
+  }
+}
