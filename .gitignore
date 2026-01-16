@@ -4,8 +4,11 @@ generated-src/
 project/
 target/
 test_run_dir/
+build/
+.idea/
 
 *.v
 *.fir
 *.json
 *.vcd
+*.bat
